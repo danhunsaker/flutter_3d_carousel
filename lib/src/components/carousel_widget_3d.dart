@@ -152,7 +152,7 @@ class _CarouselWidget3DState extends State<CarouselWidget3D>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-  late final double _stepAngle;
+  double _stepAngle = 2 * math.pi;
 
   static const int animationTimeMillis = 300;
 
@@ -171,6 +171,24 @@ class _CarouselWidget3DState extends State<CarouselWidget3D>
     _controller.addListener(_controllerListener);
     if (widget.shouldRotate) {
       _rotateInfinitely();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant CarouselWidget3D oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.children.length != oldWidget.children.length) {
+      _stepAngle = (2 * math.pi) / widget.children.length;
+    }
+
+    if (widget.timeForFullRevolution != oldWidget.timeForFullRevolution) {
+      _controller.duration =
+          Duration(milliseconds: widget.timeForFullRevolution);
+    }
+
+    if (widget.shouldRotate != oldWidget.shouldRotate) {
+      widget.shouldRotate ? _controller.repeat() : animateToClosestStep();
     }
   }
 
